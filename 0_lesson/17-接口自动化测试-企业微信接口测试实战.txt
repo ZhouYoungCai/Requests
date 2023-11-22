@@ -1,0 +1,180 @@
+1、目录
+	接口测试基础
+	接口测试流程
+	基础接口代码编写
+	用例编写思考模型
+	脚本PO封装及优化
+2、接口测试的定义
+	测试系统组件间接口的一种测试
+3、接口测试的价值
+
+4、restful 规范
+	遵守 REST 体系结构约束的 Web 服务 API 称为 RESTful API。 REST，即 Representational State Transfer 的缩写
+	每一个 URI 代表一种资源
+	客户端和服务器之间，传递这种资源的某种表现层
+	客户端通过四个 HTTP 动词，对服务器端资源进行操作，实现表现层状态转化
+5、四个动作
+	GET：获取资源
+	POST：新建／更新资源
+	PUT：更新资源
+	DELETE：删除资源
+6、项目流程
+	需求分析
+	测试设计
+	测试用例评审
+	测试执行：冒烟、手工、自动化、性能、安全等
+	验收
+	预发布
+	上线
+7、需求分析
+	企业微信 API 文档
+	https://work.weixin.qq.com/api/doc
+	接口业务关系
+	用例编写思考模型
+8、接口业务关系
+
+9、用例编写思考模型
+
+10、基本功能测流程测试
+
+11、基于输入域的测试用例-边界值
+
+12、基于输入域的测试用例-其他校验
+
+13、基于线程安全的测试
+
+14、线程安全问题原理
+
+15、分布式线程安全问题原理
+
+16、问题特征分析
+	多线程环境下
+	多个线程共享同一个资源
+	对资源进行非原子性操作
+17、接口测试框架介绍
+	早期阶段：基于各种语言的 httpclient 封装
+	JMeter：性能测试工具，不具备完备的接口测试框架功能
+	RobotFramework：约束性比较大
+	Postman
+	RestAssured + Java
+	Requests + Python
+18、接口测试框架介绍
+	早期阶段：基于各种语言的 httpclient 封装
+	JMeter：性能测试工具，不具备完备的接口测试框架功能
+	RobotFramework：约束性比较大
+	Postman
+	RestAssured + Java
+	Requests + Python
+19、脚本优化
+	问题：“你这脚本不行啊，我这次只想执行一下修改脚本，一执行就报错，难道每次都要跑全部的脚本？”
+20、脚本优化
+	原因：
+	因为修改脚本依赖前面创建部门时产生的部门ID,如果没有执行前面的脚本,取不到部门ID,然后就报错了.
+	如果后期提高效率，并行执行多个方法，也无法保证方法的顺序性，也会出现问题。
+	解决思路：
+	要确保脚本的独立性,减少脚本间的耦合性.做到方法内部数据的自给自足。
+	实施方案：
+	在测试每个接口的方法中独立创建接口需要的入参,例如,修改部门接口需要一个部门ID，那在方法开始就调用创建部门接口产生一个部门ID。
+21、脚本优化-重复执行
+	问题： “你这脚本不行啊，就第一次能执行成功，再执行就报错了！”
+22、脚本优化-优化入参数据
+	原因：因为入参数据写死，导致第二次请求数据重复，造成报错！
+	解决思路：
+	保证每次请求的数据不重复。
+	保证每次请求前后都对数据进行还原。
+	实施方案
+	部门名称增加时间戳进行排重。
+	每次方法执行前后都对历史数据进行清理，确保每次执行脚本环境一致。
+	代码优化
+	ApiObject 设计模式
+
+	封装
+	分层
+	把实现和测试用例以及断言进行拆分
+	ApiObject
+23、代码优化
+	ApiObject 设计模式
+
+	封装
+	分层
+	把实现和测试用例以及断言进行拆分
+24、ApiObject
+
+25、目录
+	接口测试框架封装优化
+	接口测试断言
+	日志与报告
+	能力扩展
+26、代码优化
+	ApiObject 设计模式
+	封装
+	分层
+	把实现和测试用例以及断言进行拆分
+27、ApiObject
+
+28、数据驱动
+	使用数据驱动实现数据的传入
+29、jsonpath
+	官网：https://github.com/json-path/JsonPath
+	类似于 xpath 定位方式，只是定位对象是一个 json 结构体
+	相比于普通的断言方式会更加的灵活
+30、jsonpath 常用语法
+
+31、日志的封装
+	将print改造成标准输出日志
+32、报告的封装
+	类上加上装饰器 @allure.feature("")
+	测试方法上加上装饰器 @allure.story("")
+	步骤前加上 with allure.step(""):
+33、jsonshema 使用
+	在线生成 http://jsonschema.net/
+	利用库生成 genson
+	from genson import SchemaBuilder
+	builder = SchemaBuilder()
+	builder.add_object({"a":1,"b":"aaaa","c":"","d":None})
+	builder.add_object({"a":"1","b":"bbb","c":1})
+	print(builder.to_schema())
+	print(builder.to_json(indent=2))
+34、jsonschema 断言
+	from jsonschema import validate
+	def schema_validate(obj, schema):
+		try:
+			validate(instance=obj, schema=schema)
+			return True
+		except Exception as e:
+			# raise e
+			print(e)
+			return False 
+	def test_validate():
+		_schema = json.load(open("demo_schema.json", encoding="utf-8"))
+		assert schema_validate({"a": "1", "b": 12, "c": 1}, _schema)
+35、pymysql 实现数据断言
+	def query_db():
+		conn = pymysql.Connect(host="47.92.149.0", port=3366, database="test_db",
+							   user="root", password="123456",
+							   charset="utf8")
+		cursor = conn.cursor()
+		sql = "some sql'"
+		cursor.execute(sql)
+		print("行数:", cursor.rowcount)
+		# 获取行数
+		datas = cursor.fetchall()
+		print("查询到的数据为:", datas)  # 获取多条数据
+		cursor.close()
+		conn.close()
+		return datas
+36、session 传递token
+    def test_get(self):
+        data = {
+            "phone": "13544478882",
+            "password": "123456"
+        }
+        session = requests.session()
+        session.post(url="http://127.0.0.1:5000/login", json=data)
+        print(session.cookies)
+        r = session.get(url="http://127.0.0.1:5000/user/detail")
+        print(r.json())
+
+
+
+

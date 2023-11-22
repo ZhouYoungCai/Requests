@@ -1,0 +1,20 @@
+文章链接：https://www.jianshu.com/p/38109deb89d9
+1、schema校验
+	官网：https://jsonschema.net/
+	生成schema文件
+	根据需要添加自定义规则
+	image.png
+	示例：
+		import json
+		import requests
+		from jsonschema import validate
+		class TestDemo:
+			def test_schema(self):
+				url = "https://testerhome.com/api/v3/topics.json"
+				data = requests.get(url, params={'limit': '2'}).json()
+				schema = json.load(open("topic_schema.json"))
+				validate(data, schema=schema)
+2、schema自动校验
+	每次运行的时候自动保存当前的schema
+	下次运行对比上次的schema如果发现变更就报错
+	saveSchema + diffSchema

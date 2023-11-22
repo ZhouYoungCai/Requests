@@ -1,0 +1,50 @@
+1、json 起源？
+	起初使用 XML来传递数据
+	XML 因为各种规范(DTD、XSD、XPath、XSLT等)变得复杂
+	DouglasCrockford 发明了超轻量级的数据交换格式 JSON
+2、Json 与接口的关系
+
+3、jsonpath
+	解析 JSON 数据的表达语言，与 XPath 表达式语言类似
+4、jsonpath 语法
+	Xpath	JSONPath	描述
+	/	$	根节点
+	.	@	现行节点
+	/	. or []	取子节点
+	//	..	不管位置，选择所有符合条件的条件
+	*	*	匹配所有元素节点
+	[]	[]	迭代器标示(可以在里面做简单的迭代操作，如数组下标，根据内容选值等)
+	|	[,]	支持迭代器中做多选
+	[]	?()	支持过滤操作
+	n/a	()	支持表达式计算
+	()	n/a	分组，JsonPath不支持
+5、使用工具
+	jsonpath
+	https://pypi.org/project/jsonpath/
+6、练习接口
+	https://ceshiren.com/t/topic/6950.json
+7、从根节点开始的任意层级寻找 posts
+	$ 根节点
+	.. 任意层级
+	posts posts节点
+	"$..posts"
+8、代码示例
+	import requests
+	from jsonpath import jsonpath
+
+
+	def test_json_path():
+		r = requests.get("https://ceshiren.com/categories.json")
+		name_list = jsonpath(r.json(), '$.category_list.categories[0].name')
+		assert name_list[0] == '提问区'
+		name_list = jsonpath(r.json(), "$..name")
+		assert '提问区' in name_list
+9、从根节点的孩子节点寻找 tags
+	"$.tags"
+10、使用过滤
+	[?(@.username == ‘xxx’] 寻找 username 为 xxx 的数据
+	$..posts[?(@.username == 'xxx']
+11、使用 and
+	and 表示并且
+	$..posts[?(@.username == 'xxx' and @.created_at == '2020-09-27')]
+

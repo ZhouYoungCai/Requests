@@ -1,0 +1,28 @@
+企业微信接口文档：https://developer.work.weixin.qq.com/document/path/90664
+1、目录
+	自习课答疑地址
+	企业微信环境准备
+2、自习课答疑帖
+	自习的范围：训练营课程内容
+	关于作业的问题可以提前在帖子内回复，优先解答在帖子内提问的同学
+	https://ceshiren.com/t/topic/14219
+3、企业微信环境准备
+	注册企业微信（输入手机号随意注册即可）
+	配置获取token
+4、获取token必要参数
+	https://qyapi.weixin.qq.com/cgi-bin/gettoken?corpid=ID&corpsecret=SECRET
+
+	其中需要两个重要参数（后面有获取步骤）
+	corpid 企业微信的公司ID
+	corpsecret 被测的应用的密钥
+5、参数一获取：corpid（公司ID）
+	进入 企业微信 首页
+	选择我的企业
+	复制企业ID
+	proxies
+	proxies
+6、参数二获取：corpsecret（应用密钥）
+	1.顶部菜单栏：管理工具 页面
+	2.通讯录同步—> 启动API同步—> 权限 设置 —> 编辑 + 启用手动编辑 —> 保存—> 手机确认—> 刷新 —> 查看 secret —> 发送到手机上—> 手机上查看
+	3.获取到corpsecret
+	注意： corpid 和 corpsecret 每个人都有固定的， 每个人的不一样。

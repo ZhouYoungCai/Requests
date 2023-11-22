@@ -1,0 +1,7 @@
+1、为什么接口测试需要请求超时处理
+
+2、如何设置
+	import requests
+	class TestReq:
+		def test_timeout(self):
+			r = requests.get('http://github.com', timeout = 0.01)

@@ -1,0 +1,58 @@
+文章链接：https://www.jianshu.com/p/0bd9048d9c36
+1、目录
+	环境准备
+	实战练习
+2、环境准备
+		1.对响应加密的接口。对它发起一个get请求后，得到一个加密过后的响应信息。(如果有可用的加密过的接口以及了解它的解密方法，可以跳过)
+		2.准备一个加密文件
+		3.使用python命令在有加密文件的所在目录启动一个服务
+		4.访问该网站
+	加密文件制造
+		1.创建一个demo.json文件
+		  "topics": 
+		  {
+		  "orange": "movie",
+		  "school": "testing-studio",
+		  "president": "seveniruby"
+		  }
+		2.使用base64 demo.json >demo.txt命令
+		3.加密后的demo.txt文件
+		  eyJ0b3BpY3MiOgp7CiJvcmFuZ2UiOiJtb3ZpZSIsCiJzaG9vbCI6InRlc3Rpbmctc3R1ZGlvIiwKInByZXNpZGVudCI6InNldmVuaXJ1YnkiCn0KfQo=
+	切换到demo.txt的路径下，启动服务：python -m http.server 9999
+		image.png
+	访问9999端口
+		image.png
+3、原理
+	在得到响应后对响应做解密处理。
+		1.如果知道使用的是哪个通用加密算法的话，可以自行解决。
+		2.如果不了解对应的加密算法的话，可以让研发提供加解密的lib。
+		3.如果既不是通用加密算法、研发也无法提供加解密的lib的话，可以让加密方提供远程解析服务，这样算法仍然是保密的。
+4、实战练习
+	调用python自带的base64，直接对返回的响应做解密，即可得到解密后的响应。
+	封装对于不同算法的处理方法。
+		import requests
+		import base64
+		import json
+		class ApiRequest:
+			# 定义请求信息
+			req_data = {
+				"method": "get",
+				"url": "http://127.0.0.1:9999/demo.txt",
+				"headers": None,
+				"encoding": "base64"
+			}
+			def send(self, data:dict):
+				res = requests.request(data["method"], data["url"], headers=data["headers"])
+				if data["encoding"] == "base64":
+					return json.loads(base64.b64decode(res.content))
+
+				# 把加密后的响应值发给第三方服务，让第三方服务做解密然后返回
+				elif data["encoding"] == "private":
+					return requests.post("url", data=res.content)
+
+		if __name__ == '__main__':
+			api = ApiRequest()
+			print(api.send(api.req_data))
+	运行结果
+		"D:\Program Files\Python38\python.exe" D:/Programs/DevOps/Python_Practice/lessons/api/tes_rsa.py
+		{'topics': {'orange': 'movie', 'shool': 'testing-studio', 'president': 'seveniruby'}}

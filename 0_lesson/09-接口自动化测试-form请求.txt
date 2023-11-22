@@ -1,0 +1,10 @@
+1、什么是form请求
+	数据量不大
+	数据层级不深的情况
+	通常以键值对传递
+	proxies
+	proxies
+	proxies
+	proxies
+2、如何使用
+	r = requests.post("https://httpbin.testing-studio.com/post",data=data)

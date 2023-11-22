@@ -1,0 +1,175 @@
+文章链接：https://www.jianshu.com/p/476ca0b83cd0
+1、以企业微信API进行实战
+	企业微信API官网：https://work.weixin.qq.com/api/doc
+	image.png
+2、Swagger测试流程
+	API管理工具：https://swagger.io/
+		swagger editor：可以编辑api
+		swagger codegen：后端用于打桩
+		swagger ui：查看api
+	image.png
+	接口规范：前端开发、后端开发、产品、测试
+	前端开发：使用generate server生成一个stub
+	后端开发：使用generate client生成一个调用的client sdk
+	测试：使用swagger ui浏览、了解api，自动生成基础测试用例并完善丰富更多用例
+3、测试企业微信标签管理接口
+		image.png
+	requests库：https://docs.python-requests.org/zh_CN/latest/
+	获取corpid：
+		image.png
+	获取corpsecret：
+		image.png
+	获取token
+		r = requests.get(
+				"https://qyapi.weixin.qq.com/cgi-bin/gettoken",
+				params={"corpid": corpid, "corpsecret": corpsecret}
+			)
+			token = r.json()["access_token"]
+	创建标签初步代码框架：
+		import json
+		import requests as requests
+		corpid = "" # 企业id
+		corpsecret = ""
+		def test_tag_get():
+			"""获取token"""
+			r = requests.get(
+				"https://qyapi.weixin.qq.com/cgi-bin/gettoken",
+				params={"corpid": corpid, "corpsecret": corpsecret}
+			)
+			token = r.json()["access_token"]
+
+			"""创建标签"""
+			url = "https://qyapi.weixin.qq.com/cgi-bin/externalcontact/add_corp_tag"
+			r = requests.post(
+				url,
+				params={"access_token":token},
+				json={
+					"group_id": "GROUP_ID",
+					"group_name": "GROUP_NAME",
+					"order": 1,
+					"tag": [{
+						"name": "TAG_NAME_1",
+						"order": 1
+					},
+					{
+						"name": "TAG_NAME_2",
+						"order": 2
+					}
+					],
+					"agentid" : 1000014
+					}
+			)
+			print(r.json())
+			print(json.dumps(r.json(), intent=2)) # intent=2 会让结果间隔两个空格
+			assert r.status_code == 200
+			assert r.json()['errcode'] == 0
+	现存问题：
+		代码冗余
+		与底层框架耦合太多
+		封装层次不足，不利于管理
+4、API Object
+	po层：业务管理、业务功能的封装
+	testcase：与底层无关，只是业务功能的调用
+	tag.py
+		#!/user/bin/env python
+		# -*- coding: utf-8 -*-
+		import json
+
+		import requests
+
+		corpid = "" # 企业id
+		corpsecret = ""
+
+		class Tag:
+
+			def __init__(self):
+				self.token = ""
+
+			def get_token(self):
+				"""获取token"""
+				r = requests.get(
+					"https://qyapi.weixin.qq.com/cgi-bin/gettoken",
+					params={"corpid": corpid, "corpsecret": corpsecret}
+				)
+				self.token = r.json()["access_token"]
+
+			def list(self):
+				"""获取tag列表"""
+				r = requests.get(
+					"https://qyapi.weixin.qq.com/cgi-bin/externalcontact/get_corp_tag_list",
+					params={"access_token=": self.token},
+					json={
+						"tag_id":[]
+					}
+				)
+				print(json.dumps(r.json(), intent=2))  # intent=2 会让结果间隔两个空格
+				return r
+
+			def add(self, group_name, tags):
+				url = "https://qyapi.weixin.qq.com/cgi-bin/externalcontact/add_corp_tag"
+				r = requests.post(
+					url,
+					params={"access_token": self.token},
+					json={
+						"group_id": "GROUP_ID",
+						"group_name": group_name,
+						"order": 1,
+						"tag": tags,
+						"agentid": 1000014
+					}
+				)
+				# print(r.json())
+				print(json.dumps(r.json(), intent=2))  # intent=2 会让结果间隔两个空格
+				return r
+	test_tag.py
+		#!/user/bin/env python
+		# -*- coding: utf-8 -*-
+		import pytest
+
+		from Exercises.service.tag import Tag
+
+
+		# todo: 代码冗余
+		# todo: 与底层架构耦合太多
+		# todo: 封装层次不足，不利于管理
+
+		class TestTag:
+
+			def setup_class(self):
+				# todo: 数据清理过程，把测试数据清空或还原
+				self.tag = Tag()
+				self.tag.get_token()
+
+			def test_tag_list(self):
+				"""获取标签列表"""
+				r = self.tag.list()
+				assert r.status_code == 200
+				assert r.json()["errcode"] == 0
+
+			@pytest.mark.parametrize("group_name, tag_names", [
+				["group1", [{"name": "tag1"}]],
+				["group2", [{"name": "tag2"}, {"name": "tag3"}]]
+			])
+			def test_tag_get(self, group_name, tag_names):
+				# todo: 完善功能测试
+				"""创建标签"""
+				r = self.tag.add(group_name=group_name, tags=tag_names)
+				assert r.status_code == 200
+				assert r.json()['errcode'] == 0
+
+				"""校验列表"""
+				r = self.tag.list()
+				assert r.status_code == 200
+				assert r.json()["errcode"] == 0
+
+				group = [group for group in r.json()["tag_group"] if group["group_name"] == group_name][0]
+				tags = [{"name": tag['name']} for tag in r.json()["tag"]]
+				print(group)
+				print(tags)
+				assert group['group_name'] == group_name
+				assert tags == tag_names
+
+			def test_tag_fail(self):
+				pass
+	Tips：在Pycharm中将重复的数据创建变量的方法
+	image.png

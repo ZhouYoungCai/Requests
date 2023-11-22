@@ -1,0 +1,26 @@
+1、什么是代理
+
+2、使用代理之前
+
+3、使用代理之后
+
+4、代理在接口自动化的使用场景
+	测试脚本，更直观的排查请求错误，相当于编写代码时的 debug
+	获取没有错误的，真实的接口请求响应信息
+	通过代理获取自动化测试的请求响应
+	对比两次请求响应的区别
+	proxies
+	proxies
+5、Requests 如何使用代理
+	Requests 代理
+	通过 proxies 参数，监听请求与响应信息proxies
+6、如何使用
+	设定代理格式
+	通过 proxies 参数传递代理设置
+	开启代理工具监听请求
+7、具体代码
+    import requests
+	proxies = {'http':'http://127.0.0.1:8080','https':'http://127.0.0.1:8080'}
+	r = requests.get('http://example.org',proxies=proxies)
+	print(r)
+	assert r.response_code == 200

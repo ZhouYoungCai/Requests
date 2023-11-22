@@ -1,0 +1,36 @@
+文章链接：https://www.jianshu.com/p/06a8e4cc98bc
+1、Cookie使用场景
+	在接口测试过程中，很多情况下，需要发送的请求附带cookies，才会得到正常的响应的结果。
+	所以使用python+requests进行接口自动化测试也是同理，需要在构造接口测试用例时加入cookie。
+2、传递Cookie的两种方式
+	通过请求头信息传递
+	通过请求的关键字参数cookies传递
+3、自定义header
+	import requests
+	def test_demo():
+		url = "https://httpbin.testing-studio.com/cookies"
+		header = {
+			"Cookie": "Insane_Cookie",
+			"User-Agent": "Insane"
+		}
+		r = requests.get(url, headers = header, verify=False)
+		print(r.request.headers)
+	结果
+		test_requests.py::test_demo PASSED                                       [100%]
+		{'User-Agent': 'Insane', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Cookie': 'Insane_Cookie'}
+4、使用cookies参数
+	import requests
+	def test_demo1():
+		url = "https://httpbin.testing-studio.com/cookies"
+		header = {
+			"User-Agent": "Insane"
+		}
+		cookie_data = {
+			"Insane": "Loafer",
+			"Tiger": "Number1"
+		}
+		r = requests.get(url, headers = header, cookies = cookie_data, verify=False)
+		print(r.request.headers)
+	结果
+	test_requests.py::test_demo1 PASSED                                      [100%]
+	{'User-Agent': 'Insane', 'Accept-Encoding': 'gzip, deflate', 'Accept': '*/*', 'Connection': 'keep-alive', 'Cookie': 'Insane=Loafer; Tiger=Number1'}

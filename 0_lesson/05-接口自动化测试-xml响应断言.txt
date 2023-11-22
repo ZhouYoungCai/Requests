@@ -1,0 +1,55 @@
+1、什么是 xml
+	可扩展标记语言（Extensible Markup Language）的缩写
+	也是一种结构化的数据
+2、xml 断言
+	from requests_xml import XMLSession
+	session = XMLSession()
+	r = session.get('https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss')
+	r.xml.links
+3、xpath 断言
+	from requests_xml import XMLSession
+	session = XMLSession()
+	r = session.get('https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss')
+	r.xml.links
+	item = r.xml.xpath('//item', first=True)
+	print(item.text)
+4、xml 解析
+	import xml.etree.ElementTree as ET
+	root = ET.fromstring(countrydata)
+	root.findall(".")
+	root.findall("./country/neighbor")
+	root.findall(".//year/..[@name='Singapore']")
+	root.findall(".//*[@name='Singapore']/year")
+	root.findall(".//neighbor[2]")
+5、xml断言
+		xml断言的py文件：https://github.com/erinxocon/requests-xml/blob/master/requests_xml.py
+	示例：
+		import requests
+		from .requests_xml import XMLSession
+
+
+		class TestDemo:
+			def test_xml(self):
+				session =  XMLSession()
+				r = session.get("https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss")
+				r.xml.links
+	也可使用xpath断言
+		import requests
+		from .requests_xml import XMLSession
+
+
+		class TestDemo:
+			def test_xml(self):
+				session =  XMLSession()
+				r = session.get("https://www.nasa.gov/rss/dyn/lg_image_of_the_day.rss")
+				r.xml.links
+				item = r.xml.xpath('//item', first=True)
+				print(item.text)
+	xml解析
+			import xml.etree.ElementTree as ET
+			root = ET.fromstring(countrydata)
+			root.findall(".")
+			root.findall("./country/neighbor")
+			root.findall(".//year/..[@name='Singapore']")
+			root.findall(".//*[@name='Singapore']/year")
+			root.findall(".//neighbor[2]")

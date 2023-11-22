@@ -1,0 +1,129 @@
+文章链接：https://www.jianshu.com/p/f61cbe7ca54d
+1、问题
+	如何指定请求方法？
+	如何修改请求头?
+	如何修改请求url的参数信息?
+2、演练环境
+	httpbin演练环境
+	https://httpbin.ceshiren.com/
+3、常用请求方法
+	get
+	post
+	put
+	delete
+	import requests
+	# 第一种方式
+	requests.get(url)
+	# 第二种方式
+	requests.request("get", url)
+4、请求头含义
+	属性	含义
+	Content-Type	内容类型
+	Host	发出请求的页面所在的域
+	User-Agent	浏览器的用户代理
+	import requests
+	header = {"User-Agent": "hogwarts"}
+	url = "https://httpbin.ceshiren.com/get"
+	# 定制请求头信息
+	r = requests.get(url, headers = header)
+	print(r.json())
+5、常用请求参数
+	指定请求参数信息 https://httpbin.ceshiren.com/get?name=ad&class=hogwarts
+
+	import requests
+	param = {"name": "ad", "class": "hogwarts"}
+	url = "https://httpbin.ceshiren.com/get"
+	r = requests.get(url, params = param)
+	print(r.json())
+	
+01、请求目标构造
+	import requests
+	requests.get("http://httpbin.testing-studio.com/get")
+02、请求参数构造
+	get query：path、 query
+	post body：
+	form：
+	结构化请求：json、xml、 json rpc
+	binary
+03、Get Query请求
+		import requests
+		class TestDemo:
+			def test_query(self):
+				payload = {
+					"level": 1,
+					"name": "insane"
+				}
+				r = requests.get("http://httpbin.testing-studio.com/get", params=payload)
+				print(r.text)
+				assert r.status_code == 200
+	运行结果
+		test_requests.py::TestDemo::test_query 
+
+		============================== 1 passed in 0.75s ==============================
+
+		Process finished with exit code 0
+		PASSED                            [100%]{
+		  "args": {
+			"level": "1", 
+			"name": "insane"
+		  }, 
+		  "headers": {
+			"Accept": "*/*", 
+			"Accept-Encoding": "gzip, deflate", 
+			"Host": "httpbin.testing-studio.com", 
+			"User-Agent": "python-requests/2.25.0", 
+			"X-Forwarded-Host": "httpbin.testing-studio.com", 
+			"X-Scheme": "https"
+		  }, 
+		  "origin": "101.205.253.7", 
+		  "url": "https://httpbin.testing-studio.com/get?level=1&name=insane"
+		}
+04、Form请求参数构造
+		import requests
+		class TestDemo:
+			def test_post_form(self):
+				payload = {
+					"username": "Insane",
+					"password": "loafer"
+				}
+				r = requests.post("http://httpbin.testing-studio.com/post", data=payload)
+				print(r.text)
+				assert r.status_code == 200
+	测试结果
+		test_requests.py::TestDemo::test_post_form 
+
+		============================== 1 passed in 0.74s ==============================
+
+		Process finished with exit code 0
+		PASSED                        [100%]{
+		  "args": {}, 
+		  "data": "", 
+		  "files": {}, 
+		  "form": {
+			"password": "loafer", 
+			"username": "Insane"
+		  }, 
+		  "headers": {
+			"Accept": "*/*", 
+			"Accept-Encoding": "gzip, deflate", 
+			"Content-Length": "31", 
+			"Content-Type": "application/x-www-form-urlencoded", 
+			"Host": "httpbin.testing-studio.com", 
+			"User-Agent": "python-requests/2.25.0", 
+			"X-Forwarded-Host": "httpbin.testing-studio.com", 
+			"X-Scheme": "https"
+		  }, 
+		  "json": null, 
+		  "origin": "101.205.253.7", 
+		  "url": "https://httpbin.testing-studio.com/post"
+		}
+05、文件上传
+	files = {'file': open('report.xls', 'rb')}
+	r = requests.post(url, files=files)
+06、header构造
+	普通的header：
+	headers = { 'user-agent': 'my-app/0.0.1'}
+	r = requests.get(url, headers=headers)
+	cookie
+	cookies = dict(cookies _are='working')
+	r = requests.get(url, cookies=cookies)

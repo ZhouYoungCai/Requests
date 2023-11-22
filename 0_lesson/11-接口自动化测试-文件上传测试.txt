@@ -1,0 +1,18 @@
+1、通过接口上传文件
+	proxies
+	proxies
+	proxiesproxies
+2、文件上传的由来
+	Since file-upload is a feature that will benefit many applications, 
+	this proposes an extension to HTML to allow information providers to express file upload requests uniformly, 
+	and a MIME compatible representation for file upload responses.
+	1867文档中说明文件上传是一种常见的需要求，但是使用html中的form表单格式却不支持，
+	提出了一种兼容此需求的mime type。
+3、使用requests如何上传
+	r = requests.post("https://httpbin.ceshiren.com/post",files={"hogwarts_file":open("1.txt", "rb")},proxies = {"http":"http://127.0.0.1:8080","https":"http://127.0.0.1:8080"},verify = False)
+	
+4、文件上传接口场景
+    解决接口测试路程中文件上传的问题
+	    1.指定name
+		2.指定filename
+		3.指定content-type

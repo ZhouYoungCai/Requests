@@ -1,0 +1,48 @@
+文章链接：https://www.jianshu.com/p/1aeb0a9f6abb
+1、目录
+	接口断言使用场景
+	响应结果类型
+	响应结果断言
+2、接口断言使用场景
+	问题：
+	如何确保请求可以发送成功
+	如何保证符合业务需求
+	解决方案：
+	通过获取响应信息，验证接口请求是否成功，是否符合业务需求
+3、响应结果类型
+	属性	含义
+	r.status_code	响应码
+	r.url	编码之后的请求的 url
+	r.content	字节流形式的响应
+	r.raw	原始响应内容
+	r.json()	json 解码后的响应内容
+4、响应结果断言
+	简单断言
+	r.json()
+	r.status_code
+	import requests
+
+	def test_req():
+		r = requests.get("https://httpbin.ceshiren.com/get")
+		assert r.status_code == 200
+		assert r.json()["url"] == "https://httpbin.ceshiren.com/get"
+5、若碰到复杂断言应该如何处理？
+	jsonpath
+	jsonschema
+	自行编写解析算法
+6、响应结果
+	基本信息：r.url、r.status_code、r.headers、r.cookies
+	响应结果：
+		r.text = r.encoding +r.content
+		r.json() = r.encoding + r.content + content type json
+		r.raw.read(10)
+	对应的请求内容：r.request
+7、断言示例
+	import requests
+	class TestDemo:
+		def test_header(self):
+			r = requests.get("http://httpbin.testing-studio.com/get", headers={"h": "headers"})
+			print(r.text)
+			print(r.json())
+			assert r.status_code == 200
+			assert r.json()["headers"]["h"] == 'headers"

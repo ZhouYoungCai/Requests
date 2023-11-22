@@ -1,0 +1,159 @@
+文章链接：https://www.jianshu.com/p/6398c2ef00fe
+1、JSON请求体构造
+		import requests
+		class TestDemo:
+			def test_post_json(self):
+				payload = {
+					"level": 1,
+					"name": "insane"
+				}
+				r = requests.post("https://httpbin.testing-studio.com/post", json=payload)
+				print(r.text)
+				assert r.status_code == 200
+				assert r.json()['json']['level'] == 1
+	请求结果：data中是被转义的结果，json中自动将字典转为json格式，header中为"Content-Type": "application/json",
+		test_demo.py::TestDemo::test_post_json 
+
+		============================== 1 passed in 0.38s ==============================
+
+		Process finished with exit code 0
+		PASSED                            [100%]{
+		  "args": {}, 
+		  "data": "{\"level\": 1, \"name\": \"insane\"}", 
+		  "files": {}, 
+		  "form": {}, 
+		  "headers": {
+			"Accept": "*/*", 
+			"Accept-Encoding": "gzip, deflate", 
+			"Content-Length": "30", 
+			"Content-Type": "application/json", 
+			"Host": "httpbin.testing-studio.com", 
+			"User-Agent": "python-requests/2.24.0", 
+			"X-Forwarded-Host": "httpbin.testing-studio.com", 
+			"X-Scheme": "https"
+		  }, 
+		  "json": {
+			"level": 1, 
+			"name": "insane"
+		  }, 
+		  "origin": "101.204.128.115", 
+		  "url": "https://httpbin.testing-studio.com/post"
+		}
+	xml请求，应用场景较少
+		def test_post_xml(self):
+			xml = """<?xml version='1.0' encoding='utf-8'?><a>6</a>"""
+			headers = {'Content-Type': 'application/xml'}
+			r = requests.post('http://httpbin.org/post', data=xml, headers=headers).text
+	复杂数据解析
+		数据保存：将复杂的xml或者json请求体保存到文件模板中
+		数据处理：
+		使用mustache、freemaker等工具解析
+		简单的字符串替换
+		使用json xml api进行结构化解析
+		数据生成：输出最终结果
+	模板技术 mustache
+		模板：
+			{
+				"erccode": 0,
+				"eccmsg": "ok",
+				"userid": "{iuseridJ}",
+				"name": "{{name}}",
+				"department": [
+					532
+				],
+				"position": "测试工程师",
+				"mobile": "{{mobile}}" 
+			}
+	脚本：
+		import pystache
+		pystache.render(
+			'Hi {{person}}!',
+			{'person': 'Insane'}
+		)
+
+		>>> Hi Insane!
+2、JSON/XML响应断言
+	json断言
+		def test_post_json(self):
+			payload = {
+				"username": "Insane",
+				"password": "loafer"
+			}
+			r = requests.post("http://httpbin.testing-studio.com/post", json=payload)
+			print(r.text)
+			assert r.status_code == 200
+			assert r.json()['json']['usernmae'] == "Insane"
+	json path断言
+		规则
+			image.png
+		安装第三方库jsonpath：pip install jsonpath
+
+		示例
+			import requests
+			from jsonpath import jsonpath
+			class TestDemo:
+				def test_hogwards(self):
+					r = requests.get("https://home.testing-studio.com/categories.json")
+					print(r.text)
+					assert r.status_code == 200
+					assert r.json()['category_list']['categories'][0]['name'] == '霍格沃兹'
+					assert jsonpath(r.json(), '$..name')[0] == '霍格沃兹' # 取出所有name的第一个
+3、Hamcrest断言体系
+	框架自带assert体系：assert、assertEqual
+	Hamcrest体系：assertThat
+	官网：http://hamcrest.org/
+	安装第三方库：pip install pyhamcrest
+	断言规则：
+		Object
+		  equal_to - match equal object
+		  has_length - match len()
+		  has_property - match value of property with given name
+		  has_properties - match an object that has all of the given properties.
+		  has_string - match str()
+		  instance_of - match object type
+		  none, not_none - match None, or not None
+		  same_instance - match same object
+		  calling, raises - wrap a method call and assert that it raises an exception
+		Number
+		  close_to - match number close to a given value
+		  greater_than, greater_than_or_equal_to, less_than, less_than_or_equal_to - match numeric ordering
+		Text
+		  contains_string - match part of a string
+		  ends_with - match the end of a string
+		  equal_to_ignoring_case - match the complete string but ignore case
+		  equal_to_ignoring_whitespace - match the complete string but ignore extra whitespace
+		  matches_regexp - match a regular expression in a string
+		  starts_with - match the beginning of a string
+		  string_contains_in_order - match parts of a string, in relative order
+		Logical
+		  all_of - and together all matchers
+		  any_of - or together all matchers
+		  anything - match anything, useful in composite matchers when you don't care about a particular value
+		  is_not, not_ - negate the matcher
+		Sequence
+		  contains - exactly match the entire sequence
+		  contains_inanyorder - match the entire sequence, but in any order
+		  has_item - match if given item appears in the sequence
+		  has_items - match if all given items appear in the sequence, in any order
+		  is_in - match if item appears in the given sequence
+		  only_contains - match if sequence's items appear in given list
+		  empty - match if the sequence is empty
+		Dictionary
+		  has_entries - match dictionary with list of key-value pairs
+		  has_entry - match dictionary containing a key-value pair
+		  has_key - match dictionary with a key
+		  has_value - match dictionary with a value
+		Decorator
+		  calling - wrap a callable in a deferred object, for subsequent matching on calling behaviour
+		  raises - Ensure that a deferred callable raises as expected
+		  described_as - give the matcher a custom failure description
+		  is_ - decorator to improve readability - see Syntactic sugar below
+	示例
+		import requests
+		from hamcrest import *
+		class TestDemo:
+			def test_hamcrest(self):
+				r = requests.get("http://httpbin.testing-studio.com/get", headers={'h': 'H'})
+				print(r.text)
+				assert r.status_code == 200
+				assert_that(r.json()['headers']['h'], equal_to('H'))
